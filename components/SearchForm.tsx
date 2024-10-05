@@ -14,13 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-// import { toast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,8 +26,11 @@ import {
 import { Input } from "@/components/ui/input";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  fromLocation: z.string().min(2, {
+    message: "Location must be at least 2 characters.",
+  }),
+  toLocation: z.string().min(2, {
+    message: "Location must be at least 2 characters.",
   }),
 });
 
@@ -38,23 +38,19 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 
 export default function SearchForm() {
-  const [date, setDate] = React.useState<Date>();
+  const [departureDate, setDepartureDate] = React.useState<Date>();
+  const [returnDate, setReturnDate] = React.useState<Date>();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
+      fromLocation: "",
+      toLocation: "",
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // })
+    console.log(data);
   }
 
   return (
@@ -64,11 +60,15 @@ export default function SearchForm() {
           <div className="flex items-center space-x-4">
             <FormField
               control={form.control}
-              name="username"
+              name="fromLocation"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Where from?" {...field} className="w-56" />
+                    <Input
+                      placeholder="Where from?"
+                      {...field}
+                      className="w-56"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -81,11 +81,15 @@ export default function SearchForm() {
 
             <FormField
               control={form.control}
-              name="username"
+              name="toLocation"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Where to?" {...field} className="w-56" />
+                    <Input
+                      placeholder="Where to?"
+                      {...field}
+                      className="w-56"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -99,18 +103,22 @@ export default function SearchForm() {
                   variant={"outline"}
                   className={cn(
                     "w-44 justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    !departureDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Departure</span>}
+                  {departureDate ? (
+                    format(departureDate, "PPP")
+                  ) : (
+                    <span>Departure</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={departureDate}
+                  onSelect={setDepartureDate}
                   initialFocus
                 />
               </PopoverContent>
@@ -122,28 +130,29 @@ export default function SearchForm() {
                   variant={"outline"}
                   className={cn(
                     "w-44 justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    !returnDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Return</span>}
+                  {returnDate ? format(returnDate, "PPP") : <span>Return</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={returnDate}
+                  onSelect={setReturnDate}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
           </div>
         </div>
+
         <div className="flex items-end justify-end">
           <Button
             type="submit"
-            className="bg-[#003E39] px-12 hover:bg-green-900 rounded "
+            className="bg-[#003E39] px-12 hover:bg-green-900 rounded"
           >
             <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
             Search flights
