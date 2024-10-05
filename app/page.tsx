@@ -1,6 +1,7 @@
 "use client";
 import SearchForm from "@/components/SearchForm";
 
+
 export default function Home() {
   return (
     <main className="px-40 flex flex-col items-center justify-center h-screen">
