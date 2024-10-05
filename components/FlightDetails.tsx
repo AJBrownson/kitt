@@ -15,6 +15,7 @@ export default function FlightDetails() {
       airlineName: "Saudi Arabian Airlines • SV553",
       airlineClass: "Economy • A330",
       flightTime: "Flight time 3h 45m",
+      layoverTime: "Layover 2h 25m",
     },
   ];
 
