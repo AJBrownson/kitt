@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import * as React from "react";
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { CalendarIcon, MagnifyingGlassIcon, ArrowRightIcon, ArrowLeftIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 
 import { cn } from "@/lib/utils";
@@ -25,6 +25,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import airports from "@/utils/airportData.json";
+
 const FormSchema = z.object({
   fromLocation: z.string().min(2, {
     message: "Location must be at least 2 characters.",
@@ -34,12 +43,12 @@ const FormSchema = z.object({
   }),
 });
 
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
-
 export default function SearchForm() {
   const [departureDate, setDepartureDate] = React.useState<Date>();
   const [returnDate, setReturnDate] = React.useState<Date>();
+
+  const [fromLocation, setFromLocation] = React.useState("");
+  const [toLocation, setToLocation] = React.useState("");
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -48,6 +57,16 @@ export default function SearchForm() {
       toLocation: "",
     },
   });
+
+  // Function to handle dropdown selection for the "from" location
+  const handleSelectFromLocation = (airportCode: string) => {
+    setFromLocation(airportCode);
+  };
+
+  // Function to handle dropdown selection for the "to" location
+  const handleSelectToLocation = (airportCode: string) => {
+    setToLocation(airportCode);
+  };
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
@@ -58,45 +77,59 @@ export default function SearchForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex justify-between">
           <div className="flex items-center space-x-4">
-            <FormField
-              control={form.control}
-              name="fromLocation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="Where from?"
-                      {...field}
-                      className="w-56"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {/* From Location Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Input
+                  placeholder="Where from?"
+                  value={fromLocation} // Bind the input value to fromLocation state
+                  onChange={(e) => setFromLocation(e.target.value)}
+                  className="w-56"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent >
+                {airports.airports.map((airport) => (
+                  <DropdownMenuItem
+                    key={airport.code}
+                    onClick={() => handleSelectFromLocation(`(${airport.code}) ${airport.name}`)}
+                  >
+                   ({airport.code}) {airport.name} 
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <span className="flex flex-col justify-center items-center bg-[#F5F7FA] w-7 h-7 p-1 rounded-full">
               <ArrowRightIcon className="w-4 h-4" />
               <ArrowLeftIcon className="w-4 h-4" />
             </span>
 
-            <FormField
-              control={form.control}
-              name="toLocation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder="Where to?"
-                      {...field}
-                      className="w-56"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {/* To Location Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Input
+                  placeholder="Where to?"
+                  value={toLocation} // Bind the input value to toLocation state
+                  onChange={(e) => setToLocation(e.target.value)}
+                  className="w-56"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {airports.airports.map((airport) => (
+                  <DropdownMenuItem
+                    key={airport.code}
+                    onClick={() => handleSelectToLocation(`(${airport.code}) ${airport.name}`)}
+                    className="hover:bg-green-500 px-4 py-2 cursor-pointer text-gray-700"
+                  >
+                   ({airport.code}) {airport.name} 
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Departure Date */}
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -124,6 +157,7 @@ export default function SearchForm() {
               </PopoverContent>
             </Popover>
 
+            {/* Return Date */}
             <Popover>
               <PopoverTrigger asChild>
                 <Button

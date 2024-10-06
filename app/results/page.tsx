@@ -125,7 +125,7 @@ export default function ResultsPage() {
 
       {/* loading line animation */}
       <div className="w-full h-[2px] bg-gray-200 relative overflow-hidden">
-        <div className="absolute h-[2px] bg-green-500 animate-progres"></div>
+        <div className="absolute h-[2px] bg-green-500 animate-progress"></div>
       </div>
 
       {/* flight results */}

@@ -19,7 +19,7 @@ const config: Config = {
         neueMontreal: ["var(--font-neue-montreal)"],
       },
       animation: {
-        progress: "progress 2s linear infinite",
+        progress: "progress 10s linear infinite",
       },
       colors: {
         background: "hsl(var(--background))",
